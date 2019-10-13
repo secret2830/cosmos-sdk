@@ -73,7 +73,7 @@ func (vmd ValidateMemoDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	}
 
 	afterGas := ctx.GasMeter().GasConsumed()
-	fmt.Printf("VALIDATEBASIC. SIMULATE: %t\n", simulate)
+	fmt.Printf("VALIDATEMEMO. SIMULATE: %t\n", simulate)
 	fmt.Printf("GAS CONSUMED IN DECORATOR: %d\n", afterGas-beforeGas)
 	fmt.Printf("TOTAL GAS CONSUMED: %d\n\n", afterGas)
 	return next(ctx, tx, simulate)
@@ -97,7 +97,7 @@ func (cgts ConsumeTxSizeGasDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, sim
 	ctx.GasMeter().ConsumeGas(params.TxSizeCostPerByte*sdk.Gas(len(ctx.TxBytes())), "txSize")
 
 	afterGas := ctx.GasMeter().GasConsumed()
-	fmt.Printf("VALIDATEBASIC. SIMULATE: %t\n", simulate)
+	fmt.Printf("CONSUMEGASFORTXSIZE. SIMULATE: %t\n", simulate)
 	fmt.Printf("GAS CONSUMED IN DECORATOR: %d\n", afterGas-beforeGas)
 	fmt.Printf("TOTAL GAS CONSUMED: %d\n\n", afterGas)
 	return next(ctx, tx, simulate)
