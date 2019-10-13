@@ -100,3 +100,21 @@ func TestConsumeGasForTxSize(t *testing.T) {
 	consumedGas := ctx.GasMeter().GasConsumed() - beforeGas
 	require.Equal(t, expectedGas, consumedGas, "Decorator did not consume the correct amount of gas")
 }
+
+func TestSimBasic(t *testing.T) {
+	// setup
+	app, ctx := createTestApp(true)
+
+	// keys and addresses
+	priv1, _, addr1 := types.KeyTestPubAddr()
+
+	// msg and signatures
+	msg1 := types.NewTestMsg(addr1)
+	fee := types.NewTestStdFee()
+
+	msgs := []sdk.Msg{msg1}
+
+	privs, accNums, seqs := []crypto.PrivKey{priv1}, []uint64{0}, []uint64{0}
+	tx := types.NewTestTx(ctx, msgs, privs, accNums, seqs)
+
+}

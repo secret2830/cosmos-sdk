@@ -36,6 +36,7 @@ func NewMempoolFeeDecorator() MempoolFeeDecorator {
 }
 
 func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+	beforeGas := ctx.GasMeter().GasConsumed()
 	feeTx, ok := tx.(FeeTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
@@ -65,6 +66,10 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 		}
 	}
 
+	afterGas := ctx.GasMeter().GasConsumed()
+	fmt.Printf("MEMPOOLFEE. SIMULATE: %t\n", simulate)
+	fmt.Printf("GAS CONSUMED IN DECORATOR: %d\n", afterGas-beforeGas)
+	fmt.Printf("TOTAL GAS CONSUMED: %d\n\n", afterGas)
 	return next(ctx, tx, simulate)
 }
 
@@ -85,6 +90,7 @@ func NewDeductFeeDecorator(ak keeper.AccountKeeper, sk types.SupplyKeeper) Deduc
 }
 
 func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+	beforeGas := ctx.GasMeter().GasConsumed()
 	feeTx, ok := tx.(FeeTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
@@ -109,6 +115,10 @@ func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 		}
 	}
 
+	afterGas := ctx.GasMeter().GasConsumed()
+	fmt.Printf("DEDUCTFEES. SIMULATE: %t\n", simulate)
+	fmt.Printf("GAS CONSUMED IN DECORATOR: %d\n", afterGas-beforeGas)
+	fmt.Printf("TOTAL GAS CONSUMED: %d\n\n", afterGas)
 	return next(ctx, tx, simulate)
 }
 

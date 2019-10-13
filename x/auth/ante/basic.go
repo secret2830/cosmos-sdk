@@ -1,6 +1,8 @@
 package ante
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	err "github.com/cosmos/cosmos-sdk/types/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -22,10 +24,15 @@ func NewValidateBasicDecorator() ValidateBasicDecorator {
 }
 
 func (vbd ValidateBasicDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
+	beforeGas := ctx.GasMeter().GasConsumed()
 	if err := tx.ValidateBasic(); err != nil {
 		return ctx, err
 	}
 
+	afterGas := ctx.GasMeter().GasConsumed()
+	fmt.Printf("VALIDATEBASIC. SIMULATE: %t\n", simulate)
+	fmt.Printf("GAS CONSUMED IN DECORATOR: %d\n", afterGas-beforeGas)
+	fmt.Printf("TOTAL GAS CONSUMED: %d\n\n", afterGas)
 	return next(ctx, tx, simulate)
 }
 
@@ -49,6 +56,7 @@ func NewValidateMemoDecorator(ak keeper.AccountKeeper) ValidateMemoDecorator {
 }
 
 func (vmd ValidateMemoDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
+	beforeGas := ctx.GasMeter().GasConsumed()
 	memoTx, ok := tx.(TxWithMemo)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "invalid transaction type")
@@ -64,6 +72,10 @@ func (vmd ValidateMemoDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 		)
 	}
 
+	afterGas := ctx.GasMeter().GasConsumed()
+	fmt.Printf("VALIDATEBASIC. SIMULATE: %t\n", simulate)
+	fmt.Printf("GAS CONSUMED IN DECORATOR: %d\n", afterGas-beforeGas)
+	fmt.Printf("TOTAL GAS CONSUMED: %d\n\n", afterGas)
 	return next(ctx, tx, simulate)
 }
 
@@ -80,8 +92,13 @@ func NewConsumeGasForTxSizeDecorator(ak keeper.AccountKeeper) ConsumeTxSizeGasDe
 }
 
 func (cgts ConsumeTxSizeGasDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
+	beforeGas := ctx.GasMeter().GasConsumed()
 	params := cgts.ak.GetParams(ctx)
 	ctx.GasMeter().ConsumeGas(params.TxSizeCostPerByte*sdk.Gas(len(ctx.TxBytes())), "txSize")
 
+	afterGas := ctx.GasMeter().GasConsumed()
+	fmt.Printf("VALIDATEBASIC. SIMULATE: %t\n", simulate)
+	fmt.Printf("GAS CONSUMED IN DECORATOR: %d\n", afterGas-beforeGas)
+	fmt.Printf("TOTAL GAS CONSUMED: %d\n\n", afterGas)
 	return next(ctx, tx, simulate)
 }

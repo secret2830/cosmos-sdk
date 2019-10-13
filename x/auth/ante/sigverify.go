@@ -3,6 +3,7 @@ package ante
 import (
 	"bytes"
 	"encoding/hex"
+	"fmt"
 
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/ed25519"
@@ -59,6 +60,7 @@ func NewSetPubKeyDecorator(ak keeper.AccountKeeper) SetPubKeyDecorator {
 }
 
 func (spkd SetPubKeyDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
+	beforeGas := ctx.GasMeter().GasConsumed()
 	sigTx, ok := tx.(SigVerifiableTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "invalid tx type")
@@ -89,6 +91,10 @@ func (spkd SetPubKeyDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 		spkd.ak.SetAccount(ctx, acc)
 	}
 
+	afterGas := ctx.GasMeter().GasConsumed()
+	fmt.Printf("SETPUBKEY. SIMULATE: %t\n", simulate)
+	fmt.Printf("GAS CONSUMED IN DECORATOR: %d\n", afterGas-beforeGas)
+	fmt.Printf("TOTAL GAS CONSUMED: %d\n\n", afterGas)
 	return next(ctx, tx, simulate)
 }
 
@@ -109,6 +115,7 @@ func NewSigGasConsumeDecorator(ak keeper.AccountKeeper, sigGasConsumer Signature
 }
 
 func (sgcd SigGasConsumeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+	beforeGas := ctx.GasMeter().GasConsumed()
 	sigTx, ok := tx.(SigVerifiableTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "invalid transaction type")
@@ -148,6 +155,10 @@ func (sgcd SigGasConsumeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 		}
 	}
 
+	afterGas := ctx.GasMeter().GasConsumed()
+	fmt.Printf("CONSUMESIMSIGGAS. SIMULATE: %t\n", simulate)
+	fmt.Printf("GAS CONSUMED IN DECORATOR: %d\n", afterGas-beforeGas)
+	fmt.Printf("TOTAL GAS CONSUMED: %d\n\n", afterGas)
 	return next(ctx, tx, simulate)
 }
 
@@ -167,6 +178,7 @@ func NewSigVerificationDecorator(ak keeper.AccountKeeper) SigVerificationDecorat
 }
 
 func (svd SigVerificationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+	beforeGas := ctx.GasMeter().GasConsumed()
 	sigTx, ok := tx.(SigVerifiableTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "invalid transaction type")
@@ -207,6 +219,10 @@ func (svd SigVerificationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simul
 		}
 	}
 
+	afterGas := ctx.GasMeter().GasConsumed()
+	fmt.Printf("SIGVERIFY. SIMULATE: %t\n", simulate)
+	fmt.Printf("GAS CONSUMED IN DECORATOR: %d\n", afterGas-beforeGas)
+	fmt.Printf("TOTAL GAS CONSUMED: %d\n\n", afterGas)
 	return next(ctx, tx, simulate)
 }
 
@@ -224,6 +240,7 @@ func NewIncrementSequenceDecorator(ak keeper.AccountKeeper) IncrementSequenceDec
 }
 
 func (isd IncrementSequenceDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
+	beforeGas := ctx.GasMeter().GasConsumed()
 	sigTx, ok := tx.(SigVerifiableTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "invalid transaction type")
@@ -238,6 +255,10 @@ func (isd IncrementSequenceDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, sim
 		isd.ak.SetAccount(ctx, acc)
 	}
 
+	afterGas := ctx.GasMeter().GasConsumed()
+	fmt.Printf("INCREMENTSEQUENCE. SIMULATE: %t\n", simulate)
+	fmt.Printf("GAS CONSUMED IN DECORATOR: %d\n", afterGas-beforeGas)
+	fmt.Printf("TOTAL GAS CONSUMED: %d\n\n", afterGas)
 	return next(ctx, tx, simulate)
 }
 
@@ -256,6 +277,7 @@ func NewValidateSigCountDecorator(ak keeper.AccountKeeper) ValidateSigCountDecor
 }
 
 func (vscd ValidateSigCountDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
+	beforeGas := ctx.GasMeter().GasConsumed()
 	sigTx, ok := tx.(SigVerifiableTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a sigTx")
@@ -273,6 +295,10 @@ func (vscd ValidateSigCountDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, sim
 		}
 	}
 
+	afterGas := ctx.GasMeter().GasConsumed()
+	fmt.Printf("VALIDATESIGCOUNT. SIMULATE: %t\n", simulate)
+	fmt.Printf("GAS CONSUMED IN DECORATOR: %d\n", afterGas-beforeGas)
+	fmt.Printf("TOTAL GAS CONSUMED: %d\n\n", afterGas)
 	return next(ctx, tx, simulate)
 }
 
