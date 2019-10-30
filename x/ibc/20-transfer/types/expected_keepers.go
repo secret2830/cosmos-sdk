@@ -3,6 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	clientexported "github.com/cosmos/cosmos-sdk/x/ibc/02-client/exported"
+	routing "github.com/cosmos/cosmos-sdk/x/ibc/026-routing"
 	connection "github.com/cosmos/cosmos-sdk/x/ibc/03-connection"
 	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 	channelexported "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/exported"
@@ -29,6 +30,11 @@ type ClientKeeper interface {
 // ConnectionKeeper defines the expected IBC connection keeper
 type ConnectionKeeper interface {
 	GetConnection(ctx sdk.Context, connectionID string) (connection connection.ConnectionEnd, found bool)
+}
+
+// RouringKeeper defines the expected IBC routing keeper
+type RoutingKeeper interface {
+	BindPort(ctx sdk.Context, portID string, callbacks routing.ModuleCallbacks)
 }
 
 // SupplyKeeper expected supply keeper

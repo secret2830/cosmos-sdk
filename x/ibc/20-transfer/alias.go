@@ -54,6 +54,7 @@ type (
 	ChannelKeeper    = types.ChannelKeeper
 	ClientKeeper     = types.ClientKeeper
 	ConnectionKeeper = types.ConnectionKeeper
+	RoutingKeeper    = types.RoutingKeeper
 	SupplyKeeper     = types.SupplyKeeper
 	MsgTransfer      = types.MsgTransfer
 	PacketData       = types.PacketData

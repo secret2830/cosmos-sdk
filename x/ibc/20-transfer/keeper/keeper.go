@@ -7,6 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	routing "github.com/cosmos/cosmos-sdk/x/ibc/026-routing"
 	"github.com/cosmos/cosmos-sdk/x/ibc/20-transfer/types"
 	ibctypes "github.com/cosmos/cosmos-sdk/x/ibc/types"
 	supplyexported "github.com/cosmos/cosmos-sdk/x/supply/exported"
@@ -27,6 +28,7 @@ type Keeper struct {
 	clientKeeper     types.ClientKeeper
 	connectionKeeper types.ConnectionKeeper
 	channelKeeper    types.ChannelKeeper
+	routingKeeper    types.RoutingKeeper
 	bankKeeper       types.BankKeeper
 	supplyKeeper     types.SupplyKeeper
 }
@@ -35,8 +37,8 @@ type Keeper struct {
 func NewKeeper(
 	cdc *codec.Codec, key sdk.StoreKey, codespace sdk.CodespaceType,
 	clientKeeper types.ClientKeeper, connnectionKeeper types.ConnectionKeeper,
-	channelKeeper types.ChannelKeeper, bankKeeper types.BankKeeper,
-	supplyKeeper types.SupplyKeeper,
+	channelKeeper types.ChannelKeeper, routingKeeper types.RoutingKeeper,
+	bankKeeper types.BankKeeper, supplyKeeper types.SupplyKeeper,
 ) Keeper {
 
 	// ensure ibc transfer module account is set
@@ -52,6 +54,7 @@ func NewKeeper(
 		clientKeeper:     clientKeeper,
 		connectionKeeper: connnectionKeeper,
 		channelKeeper:    channelKeeper,
+		routingKeeper:    routingKeeper,
 		bankKeeper:       bankKeeper,
 		supplyKeeper:     supplyKeeper,
 	}
@@ -65,4 +68,9 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 // GetTransferAccount returns the ICS20 - transfers ModuleAccount
 func (k Keeper) GetTransferAccount(ctx sdk.Context) supplyexported.ModuleAccountI {
 	return k.supplyKeeper.GetModuleAccount(ctx, types.GetModuleAccountName())
+}
+
+// Setup binds the module to a specific port and register callbacks by routing
+func (k Keeper) Setup(ctx sdk.Context, callbacks routing.ModuleCallbacks) {
+	k.routingKeeper.BindPort(ctx, types.BoundPortID, callbacks)
 }

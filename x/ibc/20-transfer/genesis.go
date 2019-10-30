@@ -14,4 +14,7 @@ func InitGenesis(ctx sdk.Context, keeper Keeper) {
 	if moduleAcc == nil {
 		panic(fmt.Sprintf("%s module account has not been set", types.GetModuleAccountName()))
 	}
+
+	// bind port
+	keeper.Setup(ctx, NewCallbacks(keeper))
 }
